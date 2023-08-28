@@ -16,21 +16,6 @@
       "condition_value": "ASA-\\d-611101: User authentication succeeded:"
     },
     {
-      "title": "ASA TCP access denied by ACL",
-      "extractor_type": "grok",
-      "converters": [],
-      "order": 2,
-      "cursor_strategy": "copy",
-      "source_field": "message",
-      "target_field": "",
-      "extractor_config": {
-        "grok_pattern": "ASA-\\d-%{WORD:asa_messageid:int}: TCP access denied by ACL from %{IPV4:asa_src_ip}/%{BASE10NUM:asa_src_port} to %{NOTSPACE:asa_interface_out}:%{IPV4:asa_dst_ip}/%{BASE10NUM:asa_dst_port}",
-        "named_captures_only": true
-      },
-      "condition_type": "regex",
-      "condition_value": "ASA-3-710003: TCP access denied by ACL"
-    },
-    {
       "title": "ASA TCP Connection Teardown",
       "extractor_type": "grok",
       "converters": [],
@@ -89,21 +74,6 @@
       },
       "condition_type": "regex",
       "condition_value": "ASA-\\d-106023: Deny tcp"
-    },
-    {
-      "title": "ASA TCP Drops",
-      "extractor_type": "grok",
-      "converters": [],
-      "order": 9,
-      "cursor_strategy": "copy",
-      "source_field": "message",
-      "target_field": "",
-      "extractor_config": {
-        "grok_pattern": "%{IPORHOST:asa_device} %ASA-\\d-%{WORD:asa_messageid:int}: %{WORD:asa_action} %{WORD:asa_proto} %{DATA:asa_message} from %{IPV4:asa_src_ip}/%{BASE10NUM:asa_src_port} to %{IPV4:asa_dst_ip}/%{BASE10NUM:asa_dst_port} flags %{DATA:tcpflags} on interface %{DATA:asa_interface_in}$",
-        "named_captures_only": true
-      },
-      "condition_type": "regex",
-      "condition_value": "ASA-\\d-106015: Deny TCP"
     },
     {
       "title": "ASA Login Failed",
@@ -306,6 +276,50 @@
       },
       "condition_type": "regex",
       "condition_value": "ASA-6-113015: AAA user authentication Rejected"
+    },
+    {
+      "title": "ASA UDP Connection Teardown (ID)",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{IPORHOST:asa_device} %ASA-\\d-%{WORD:asa_messageid:int}: %{WORD:asa_action} %{WORD:asa_proto} connection %{BASE10NUM:asa_conn_id} for %{NOTSPACE:asa_interface_in}:%{IP:asa_src_ip}/%{BASE10NUM:asa_src_port}\\(%{NOTSPACE:asa_auth_id}\\) to %{NOTSPACE:asa_interface_out}:%{IP:asa_dst_ip}/%{BASE10NUM:asa_dst_port} duration %{TIME:asa_conn_durration} bytes %{BASE10NUM:asa_conn_bytes;long}"
+      },
+      "condition_type": "regex",
+      "condition_value": "ASA-6-302016: Teardown (.+)"
+    },
+    {
+      "title": "ASA TCP Drops",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 9,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{IPORHOST:asa_device} %ASA-\\d-%{WORD:asa_messageid:int}: %{WORD:asa_action} %{WORD:asa_proto} %{DATA:asa_message} from %{IP:asa_src_ip}/%{BASE10NUM:asa_src_port} to %{IP:asa_dst_ip}/%{BASE10NUM:asa_dst_port} flags %{DATA:tcpflags} on interface %{DATA:asa_interface_in}$",
+        "named_captures_only": true
+      },
+      "condition_type": "regex",
+      "condition_value": "ASA-\\d-106015: Deny TCP"
+    },
+    {
+      "title": "ASA TCP access denied by ACL",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 2,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{IPORHOST:asa_device} %ASA-\\d-%{WORD:asa_messageid:int}: TCP access denied by ACL from %{IPV4:asa_src_ip}/%{BASE10NUM:asa_src_port} to %{NOTSPACE:asa_interface_out}:%{IPV4:asa_dst_ip}/%{BASE10NUM:asa_dst_port}",
+        "named_captures_only": true
+      },
+      "condition_type": "regex",
+      "condition_value": "ASA-3-710003: TCP access denied by ACL"
     }
   ],
   "version": "5.0.10"
